@@ -1,7 +1,8 @@
 import { Component } from 'react';
-import { requestImg } from '../servises/api';
+import { requestImgs } from '../servises/api';
+import { ImageGallery } from './ImageGallery/ImageGallery';
 
-requestImg();
+requestImgs();
 export class App extends Component {
   state = {
     images: null,
@@ -10,20 +11,24 @@ export class App extends Component {
   };
 
   componentDidMount() {
-    this.fetchImgs();
+    const fetchImgs = async () => {
+      try {
+        const images = await requestImgs();
+        this.setState({ images, status: 'success' });
+      } catch (error) {
+        this.setState({ status: 'error', error });
+      }
+    };
+
+    fetchImgs();
   }
 
-  fetchImgs = async () => {
-    try {
-      const images = await requestImg();
-      this.setState({ images, status: 'success' });
-      console.log(this.state);
-    } catch (error) {
-      this.setState({ status: 'error', error });
-    }
-  };
-
   render() {
-    return <div>test</div>;
+    return (
+      <div>
+        {' '}
+        <ImageGallery images={this.state.images} />{' '}
+      </div>
+    );
   }
 }
