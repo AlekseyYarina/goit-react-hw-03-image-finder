@@ -5,6 +5,7 @@ import { STATUSES } from 'utils/constants';
 import { ErrorMessage } from './error/error';
 import { Loader } from './Loader/Loader';
 import { Searchbar } from './Searchbar/Searchbar';
+import { Button } from './Button/Button';
 
 export class App extends Component {
   state = {
@@ -12,12 +13,13 @@ export class App extends Component {
     status: STATUSES.idle,
     error: null,
     searchTerm: '',
+    page: 1,
   };
 
-  fetchImgsByQuery = async searchTerm => {
+  fetchImgsByQuery = async (searchTerm, page) => {
     try {
       this.setState({ status: STATUSES.pending });
-      const images = await requestImgsByQuery(searchTerm);
+      const images = await requestImgsByQuery(searchTerm, page);
       this.setState({ images, status: STATUSES.success });
     } catch (error) {
       this.setState({ status: STATUSES.error, error: error.message });
@@ -25,14 +27,29 @@ export class App extends Component {
   };
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevState.searchTerm !== this.state.searchTerm) {
-      this.fetchImgsByQuery(this.state.searchTerm);
+    if (
+      prevState.searchTerm !== this.state.searchTerm ||
+      prevState.page !== this.state.page
+    ) {
+      this.fetchImgsByQuery(this.state.searchTerm, this.state.page);
     }
   }
 
-  handleSearch = searchTerm => {
-    console.log('searchTerm:', searchTerm);
-    this.setState({ searchTerm }, this.fetchImgs);
+  handleSearch = (searchTerm, page) => {
+    this.setState({ searchTerm, page: 1 }, () => {
+      this.fetchImgsByQuery(this.state.searchTerm, this.state.page);
+    });
+  };
+
+  handleLoadMore = () => {
+    this.setState(
+      prevState => ({
+        page: prevState.page + 1,
+      }),
+      () => {
+        this.fetchImgsByQuery(this.state.searchTerm, this.state.page);
+      }
+    );
   };
 
   render() {
@@ -47,7 +64,12 @@ export class App extends Component {
         {this.state.status === STATUSES.error && (
           <ErrorMessage error={this.state.error} />
         )}
-        {showImages && <ImageGallery images={this.state.images} />}
+        {showImages && (
+          <div>
+            <ImageGallery images={this.state.images} />
+            <Button onClick={this.handleLoadMore} />
+          </div>
+        )}
       </div>
     );
   }
