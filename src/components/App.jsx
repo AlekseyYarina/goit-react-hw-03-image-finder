@@ -2,6 +2,9 @@ import { Component } from 'react';
 import { requestImgs } from '../servises/api';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import { STATUSES } from 'utils/constants';
+import { ErrorMessage } from './error/error';
+import { Loader } from './Loader/Loader';
+import { Searchbar } from './Searchbar/Searchbar';
 
 requestImgs();
 export class App extends Component {
@@ -9,6 +12,7 @@ export class App extends Component {
     images: null,
     status: STATUSES.idle,
     error: null,
+    seachTerm: '',
   };
 
   componentDidMount() {
@@ -18,7 +22,7 @@ export class App extends Component {
         const images = await requestImgs();
         this.setState({ images, status: STATUSES.success });
       } catch (error) {
-        this.setState({ status: STATUSES.error, error: error.massage });
+        this.setState({ status: STATUSES.error, error: error.message });
       }
     };
 
@@ -29,15 +33,14 @@ export class App extends Component {
     const showImages =
       this.state.status === STATUSES.success &&
       Array.isArray(this.state.images);
-    const noImages = showImages && this.state.images.lenght === 0;
 
     return (
       <div>
-        {this.state.status === STATUSES.pending && <p>Loading...</p>}
+        <Searchbar />
+        {this.state.status === STATUSES.pending && <Loader />}
         {this.state.status === STATUSES.error && (
-          <p>Oops...{this.state.error}</p>
+          <ErrorMessage error={this.state.error} />
         )}
-        {noImages && <p>Sorry, no images!</p>}
         {showImages && <ImageGallery images={this.state.images} />}
       </div>
     );

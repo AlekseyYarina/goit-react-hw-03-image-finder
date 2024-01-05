@@ -3,10 +3,15 @@ import css from './ImageGallery.module.css';
 
 export const ImageGallery = ({ images }) => {
   return (
-    <ul className={css.ImageGallery}>
-      {images &&
-        Array.isArray(images) &&
-        images.map(image => <ImageGalleryItem key={image.id} image={image} />)}
-    </ul>
+    <div>
+      {Array.isArray(images) && images.lenght === 0 && <p>Sorry, no images!</p>}
+      <ul className={css.ImageGallery}>
+        {images &&
+          Array.isArray(images) &&
+          images.map(image => (
+            <ImageGalleryItem key={image.id} image={image} />
+          ))}
+      </ul>
+    </div>
   );
 };
