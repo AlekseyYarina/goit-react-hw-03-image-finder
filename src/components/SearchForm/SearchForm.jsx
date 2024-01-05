@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import css from './SearchForm.module.css';
 
-export const SearchForm = () => {
+export const SearchForm = ({ onSearch }) => {
+  const [searchValue, setSearchValue] = useState('');
   const handleSubmit = e => {
     e.preventDefault();
-    const searchValue = e.currentTarget.elements.searchInput.value;
-    console.log(searchValue);
+    onSearch(searchValue);
   };
 
   return (
@@ -15,7 +15,15 @@ export const SearchForm = () => {
         htmlFor="searchInput"
       ></label>
 
-      <input className={css.SearchFormInput} type="text" name="searchInput" />
+      <input
+        className={css.SearchFormInput}
+        type="text"
+        name="searchInput"
+        required
+        value={searchValue}
+        onChange={e => setSearchValue(e.target.value)}
+      />
+
       <button className={css.SearchFormButton} type="submit"></button>
     </form>
   );
