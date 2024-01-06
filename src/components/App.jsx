@@ -19,8 +19,23 @@ export class App extends Component {
   fetchImgsByQuery = async (searchTerm, page) => {
     try {
       this.setState({ status: STATUSES.pending });
+
       const images = await requestImgsByQuery(searchTerm, page);
-      this.setState({ images, status: STATUSES.success });
+
+      if (images.length === 0) {
+        this.setState({
+          status: STATUSES.error,
+          error: (
+            <>
+              There are no images matching your request.
+              <br />
+              Please change your request.
+            </>
+          ),
+        });
+      } else {
+        this.setState({ images, status: STATUSES.success });
+      }
     } catch (error) {
       this.setState({ status: STATUSES.error, error: error.message });
     }
