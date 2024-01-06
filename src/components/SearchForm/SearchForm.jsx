@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import css from './SearchForm.module.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
 
 export const SearchForm = ({ onSearch }) => {
   const [searchValue, setSearchValue] = useState('');
@@ -10,11 +12,6 @@ export const SearchForm = ({ onSearch }) => {
 
   return (
     <form className={css.SearchForm} onSubmit={handleSubmit}>
-      <label
-        className={css.SearchFormButtonLabel}
-        htmlFor="searchInput"
-      ></label>
-
       <input
         className={css.SearchFormInput}
         type="text"
@@ -24,7 +21,9 @@ export const SearchForm = ({ onSearch }) => {
         onChange={e => setSearchValue(e.target.value)}
       />
 
-      <button className={css.SearchFormButton} type="submit"></button>
+      <button className={css.SearchFormButton} type="submit">
+        <FontAwesomeIcon icon={faSearch} style={{ fontSize: '24px' }} />
+      </button>
     </form>
   );
 };
