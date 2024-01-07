@@ -6,6 +6,7 @@ import { ErrorMessage } from './error/error';
 import { Loader } from './Loader/Loader';
 import { Searchbar } from './Searchbar/Searchbar';
 import { Button } from './Button/Button';
+import { Modal } from './Modal/Modal';
 
 export class App extends Component {
   state = {
@@ -14,6 +15,8 @@ export class App extends Component {
     error: null,
     searchTerm: '',
     page: 1,
+    isOpenModal: false,
+    modalData: null,
   };
 
   fetchImgsByQuery = async (searchTerm, page) => {
@@ -67,6 +70,14 @@ export class App extends Component {
     );
   };
 
+  handleTakeLargeImage = (largeImageUrl) =>
+  {this.setState({ isOpenModal: true,
+    modalData: largeImageUrl,
+  })}
+
+handleCloceModal=() => {this.setState({ isOpenModal: false,
+})}
+
   render() {
     const showImages =
       this.state.status === STATUSES.success &&
@@ -81,8 +92,9 @@ export class App extends Component {
         )}
         {showImages && (
           <div>
-            <ImageGallery images={this.state.images} />
+            <ImageGallery images={this.state.images} handleTakeLargeImage={this.handleTakeLargeImage}/>
             <Button onClick={this.handleLoadMore} />
+            {this.state.isOpenModal && (<Modal modalData={this.state.modalData} handleCloceModal={this.handleCloceModal}/>)}
           </div>
         )}
       </div>
