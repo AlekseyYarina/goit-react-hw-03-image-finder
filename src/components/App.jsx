@@ -70,13 +70,13 @@ export class App extends Component {
     );
   };
 
-  handleTakeLargeImage = (largeImageUrl) =>
-  {this.setState({ isOpenModal: true,
-    modalData: largeImageUrl,
-  })}
+  handleTakeLargeImage = largeImageUrl => {
+    this.setState({ isOpenModal: true, modalData: largeImageUrl });
+  };
 
-handleCloceModal=() => {this.setState({ isOpenModal: false,
-})}
+  handleCloceModal = () => {
+    this.setState({ isOpenModal: false });
+  };
 
   render() {
     const showImages =
@@ -92,9 +92,17 @@ handleCloceModal=() => {this.setState({ isOpenModal: false,
         )}
         {showImages && (
           <div>
-            <ImageGallery images={this.state.images} handleTakeLargeImage={this.handleTakeLargeImage}/>
+            <ImageGallery
+              images={this.state.images}
+              handleTakeLargeImage={this.handleTakeLargeImage}
+            />
             <Button onClick={this.handleLoadMore} />
-            {this.state.isOpenModal && (<Modal modalData={this.state.modalData} handleCloceModal={this.handleCloceModal}/>)}
+            {this.state.isOpenModal && (
+              <Modal
+                modalData={this.state.modalData}
+                handleCloceModal={this.handleCloceModal}
+              />
+            )}
           </div>
         )}
       </div>

@@ -9,7 +9,11 @@ export const ImageGallery = ({ images, handleTakeLargeImage }) => {
         {images &&
           Array.isArray(images) &&
           images.map(image => (
-            <ImageGalleryItem key={image.id} image={image} handleTakeLargeImage={handleTakeLargeImage}/>
+            <ImageGalleryItem
+              key={image.id}
+              image={image}
+              handleTakeLargeImage={handleTakeLargeImage}
+            />
           ))}
       </ul>
     </div>

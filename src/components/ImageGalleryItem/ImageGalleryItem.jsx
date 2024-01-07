@@ -7,7 +7,7 @@ export const ImageGalleryItem = ({ image, handleTakeLargeImage }) => {
         className={css.ImageGalleryItemImage}
         src={image.webformatURL}
         alt={image.tags}
-        onClick={()=> handleTakeLargeImage(image.largeImageURL)}
+        onClick={() => handleTakeLargeImage(image.largeImageURL)}
       />
     </li>
   );
