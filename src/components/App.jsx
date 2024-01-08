@@ -10,12 +10,11 @@ import { Modal } from './Modal/Modal';
 
 export class App extends Component {
   state = {
-    images: null,
+    images: [],
     status: STATUSES.idle,
     error: null,
     searchTerm: '',
     page: 1,
-    isOpenModal: false,
     modalData: null,
   };
 
@@ -37,7 +36,10 @@ export class App extends Component {
           ),
         });
       } else {
-        this.setState({ images, status: STATUSES.success });
+        this.setState(prevState => ({
+          images: [...prevState.images, ...images],
+          status: STATUSES.success,
+        }));
       }
     } catch (error) {
       this.setState({ status: STATUSES.error, error: error.message });
@@ -54,52 +56,44 @@ export class App extends Component {
   }
 
   handleSearch = (searchTerm, page) => {
-    this.setState({ searchTerm, page: 1 }, () => {
-      this.fetchImgsByQuery(this.state.searchTerm, this.state.page);
-    });
+    this.setState({ searchTerm, page: 1, images: [] });
+    console.log(this.state.images); //Добавил временно для тестирования
   };
 
   handleLoadMore = () => {
-    this.setState(
-      prevState => ({
-        page: prevState.page + 1,
-      }),
-      () => {
-        this.fetchImgsByQuery(this.state.searchTerm, this.state.page);
-      }
-    );
+    this.setState(prevState => ({
+      page: prevState.page + 1,
+    }));
+    console.log(this.state.images); //Добавил временно для тестирования
   };
 
   handleTakeLargeImage = largeImageUrl => {
-    this.setState({ isOpenModal: true, modalData: largeImageUrl });
+    this.setState({ modalData: largeImageUrl });
   };
 
   handleCloceModal = () => {
-    this.setState({ isOpenModal: false });
+    this.setState({ modalData: null });
   };
 
   render() {
-    const showImages =
-      this.state.status === STATUSES.success &&
-      Array.isArray(this.state.images);
+    const { status, images, error, modalData } = this.state;
+    const showImages = status === STATUSES.success && Array.isArray(images);
 
     return (
       <div>
         <Searchbar onSearch={this.handleSearch} />
-        {this.state.status === STATUSES.pending && <Loader />}
-        {this.state.status === STATUSES.error && (
-          <ErrorMessage error={this.state.error} />
-        )}
+        {status === STATUSES.pending && <Loader />}
+        {status === STATUSES.error && <ErrorMessage error={error} />}
         {showImages && (
           <div>
             <ImageGallery
-              images={this.state.images}
+              images={images}
               handleTakeLargeImage={this.handleTakeLargeImage}
             />
             <Button onClick={this.handleLoadMore} />
-            {this.state.isOpenModal && (
+            {modalData && (
               <Modal
-                modalData={this.state.modalData}
+                modalData={modalData}
                 handleCloceModal={this.handleCloceModal}
               />
             )}
