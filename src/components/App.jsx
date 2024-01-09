@@ -12,10 +12,12 @@ export class App extends Component {
   state = {
     images: [],
     status: STATUSES.idle,
+    isLoading: false, //may be no
     error: null,
     searchTerm: '',
     page: 1,
     modalData: null,
+    totalImages: null, //may be no
   };
 
   fetchImgsByQuery = async (searchTerm, page) => {
@@ -57,14 +59,12 @@ export class App extends Component {
 
   handleSearch = (searchTerm, page) => {
     this.setState({ searchTerm, page: 1, images: [] });
-    console.log(this.state.images); //Добавил временно для тестирования
   };
 
   handleLoadMore = () => {
     this.setState(prevState => ({
       page: prevState.page + 1,
     }));
-    console.log(this.state.images); //Добавил временно для тестирования
   };
 
   handleTakeLargeImage = largeImageUrl => {
@@ -75,22 +75,52 @@ export class App extends Component {
     this.setState({ modalData: null });
   };
 
+  // render() {
+  //   const { status, images, error, modalData } = this.state;
+  //   const showImages = status === STATUSES.success && Array.isArray(images);
+
+  //   return (
+  //     <div>
+  //       <Searchbar onSearch={this.handleSearch} />
+  //       {status === STATUSES.pending && <Loader />}
+  //       {status === STATUSES.error && <ErrorMessage error={error} />}
+  //       {showImages && (
+  //         <div>
+  //           <ImageGallery
+  //             images={images}
+  //             handleTakeLargeImage={this.handleTakeLargeImage}
+  //           />
+  //           <Button onClick={this.handleLoadMore} />
+  //           {modalData && (
+  //             <Modal
+  //               modalData={modalData}
+  //               handleCloceModal={this.handleCloceModal}
+  //             />
+  //           )}
+  //         </div>
+  //       )}
+  //     </div>
+  //   );
+  // }
+
   render() {
     const { status, images, error, modalData } = this.state;
-    const showImages = status === STATUSES.success && Array.isArray(images);
 
     return (
       <div>
         <Searchbar onSearch={this.handleSearch} />
         {status === STATUSES.pending && <Loader />}
-        {status === STATUSES.error && <ErrorMessage error={error} />}
-        {showImages && (
+
+        {images.length > 0 && (
           <div>
             <ImageGallery
               images={images}
               handleTakeLargeImage={this.handleTakeLargeImage}
             />
-            <Button onClick={this.handleLoadMore} />
+            {status === STATUSES.success && (
+              <Button onClick={this.handleLoadMore} />
+            )}
+            {status === STATUSES.error && <ErrorMessage error={error} />}
             {modalData && (
               <Modal
                 modalData={modalData}
