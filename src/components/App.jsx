@@ -12,21 +12,20 @@ export class App extends Component {
   state = {
     images: [],
     status: STATUSES.idle,
-    isLoading: false, //may be no
     error: null,
     searchTerm: '',
     page: 1,
     modalData: null,
-    totalImages: null, //may be no
+    totalImages: null,
   };
 
   fetchImgsByQuery = async (searchTerm, page) => {
     try {
       this.setState({ status: STATUSES.pending });
 
-      const images = await requestImgsByQuery(searchTerm, page);
+      const { hits, total } = await requestImgsByQuery(searchTerm, page);
 
-      if (images.length === 0) {
+      if (hits.length === 0) {
         this.setState({
           status: STATUSES.error,
           error: (
@@ -39,8 +38,9 @@ export class App extends Component {
         });
       } else {
         this.setState(prevState => ({
-          images: [...prevState.images, ...images],
+          images: [...prevState.images, ...hits],
           status: STATUSES.success,
+          totalImages: total,
         }));
       }
     } catch (error) {
@@ -75,52 +75,24 @@ export class App extends Component {
     this.setState({ modalData: null });
   };
 
-  // render() {
-  //   const { status, images, error, modalData } = this.state;
-  //   const showImages = status === STATUSES.success && Array.isArray(images);
-
-  //   return (
-  //     <div>
-  //       <Searchbar onSearch={this.handleSearch} />
-  //       {status === STATUSES.pending && <Loader />}
-  //       {status === STATUSES.error && <ErrorMessage error={error} />}
-  //       {showImages && (
-  //         <div>
-  //           <ImageGallery
-  //             images={images}
-  //             handleTakeLargeImage={this.handleTakeLargeImage}
-  //           />
-  //           <Button onClick={this.handleLoadMore} />
-  //           {modalData && (
-  //             <Modal
-  //               modalData={modalData}
-  //               handleCloceModal={this.handleCloceModal}
-  //             />
-  //           )}
-  //         </div>
-  //       )}
-  //     </div>
-  //   );
-  // }
-
   render() {
     const { status, images, error, modalData } = this.state;
-
     return (
       <div>
         <Searchbar onSearch={this.handleSearch} />
         {status === STATUSES.pending && <Loader />}
-
+        {status === STATUSES.error && <ErrorMessage error={error} />}
         {images.length > 0 && (
           <div>
             <ImageGallery
               images={images}
               handleTakeLargeImage={this.handleTakeLargeImage}
             />
-            {status === STATUSES.success && (
-              <Button onClick={this.handleLoadMore} />
-            )}
-            {status === STATUSES.error && <ErrorMessage error={error} />}
+            {status === STATUSES.success &&
+              images.length !== this.state.totalImages && (
+                <Button onClick={this.handleLoadMore} />
+              )}
+
             {modalData && (
               <Modal
                 modalData={modalData}
